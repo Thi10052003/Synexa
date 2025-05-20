@@ -226,7 +226,7 @@ const OrderSummary = () => {
                   className="w-12"
                   src={stripe_logo}
                   alt="Stripe Logo"
-                  width={30}
+                  width={80}
                   height={30}
                 />
 
