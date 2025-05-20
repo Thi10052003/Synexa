@@ -1,3 +1,5 @@
+import connectDB from "@/config/db"
+import User from "@/models/User"
 import Order from "@/models/Order"
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
@@ -20,13 +22,13 @@ export async function POST(request) {
             } else {
                 await Order.findByIdAndDelete(orderId)
             }
-
+        } 
             switch (event.type) {
-                case 'payment_intent_succeeded': {
+                case 'payment_intent.succeeded': {
                     await handlePaymentIntent(event.data.object.id, true)
                     break;
                 }
-                case 'payment_intent_canceled': {
+                case 'payment_intent.canceled': {
                     await handlePaymentIntent(event.data.object.id, false)
                     break;
                 }
@@ -34,12 +36,11 @@ export async function POST(request) {
                     console.error(event.type)
                     break;
             }
-            return NextResponse, json({ received: true })
-        }
+            return NextResponse.json({ received: true })
     }
     catch (error) {
         console.error(error)
-        return NextResponse, json({ message: error.message })
+        return NextResponse.json({ message: error.message })
     }
 }
 export const config = {
