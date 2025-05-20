@@ -29,7 +29,8 @@ export async function POST(request) {
                 address,
                 items,
                 amount: amount + Math.floor(amount * 0.02),
-                date: Date.now()
+                date: Date.now(),
+                paymentType: 'COD'
             }
         })
 
