@@ -12,7 +12,12 @@
       -webkit-appearance: none;
       margin: 0;
     }
-  }
+
+    html, body {
+      background-color: #000000 !important;
+      color: #ffffff;
+    }
+}
 
 ::-webkit-scrollbar {
   display: none;

@@ -20,17 +20,10 @@ const ProductCard = ({ product }) => {
                     width={800}
                     height={800}
                 />
-                <button className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
-                    <Image
-                        className="h-3 w-3"
-                        src={assets.heart_icon}
-                        alt="heart_icon"
-                    />
-                </button>
             </div>
 
             <p className="md:text-base font-medium pt-2 w-full truncate">{product.name}</p>
-            <p className="w-full text-xs text-gray-500/70 max-sm:hidden truncate">{product.description}</p>
+            <p className="w-full text-xs text-white-500/70 max-sm:hidden truncate">{product.description}</p>
             <div className="flex items-center gap-2">
                 <p className="text-xs">{4.5}</p>
                 <div className="flex items-center gap-0.5">
@@ -51,7 +44,7 @@ const ProductCard = ({ product }) => {
 
             <div className="flex items-end justify-between w-full mt-1">
                 <p className="text-base font-medium">{currency}{product.offerPrice}</p>
-                <button className=" max-sm:hidden px-4 py-1.5 text-gray-500 border border-gray-500/20 rounded-full text-xs hover:bg-slate-50 transition">
+                <button className="max-sm:hidden px-4 py-1.5 text-white border border-white/30 rounded-full text-xs bg-transparent hover:bg-gradient-to-r hover:from-purple-500 hover:to-fuchsia-600 hover:text-white transition">
                     Buy now
                 </button>
             </div>
