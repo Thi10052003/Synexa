@@ -1,17 +1,15 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { assets } from "@/assets/assets";
-import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Loading from "@/components/Loading";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 const MyOrders = () => {
   const { currency, getToken, user } = useAppContext();
-
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,19 +40,28 @@ const MyOrders = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col justify-between px-6 md:px-16 lg:px-32 py-6 min-h-screen">
+      <div className="flex flex-col justify-between px-6 md:px-16 lg:px-32 py-6 min-h-screen text-white">
         <div className="space-y-5">
           <h2 className="text-lg font-medium mt-6">My Orders</h2>
           {loading ? <Loading /> : (
-            <div className="max-w-5xl border-t border-gray-300 text-sm">
+            <div className="max-w-5xl border-t border-gray-600 text-sm">
               {orders.map((order, index) => (
-                <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-b border-gray-300">
+                <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-b border-gray-700">
                   <div className="flex-1 flex gap-5 max-w-80">
-                    <Image
-                      className="max-w-16 max-h-16 object-cover"
-                      src={assets.box_icon}
-                      alt="box_icon"
-                    />
+                    {/* Map ảnh thật của sản phẩm đã đặt */}
+                    {order.items[0]?.product?.image?.[0] ? (
+                      <Image
+                        className="w-16 h-16 object-cover rounded"
+                        src={order.items[0].product.image[0]}
+                        alt={order.items[0].product.name}
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-700 rounded flex items-center justify-center text-xs text-white">
+                        No Image
+                      </div>
+                    )}
                     <p className="flex flex-col gap-3">
                       <span className="font-medium text-base">
                         {order.items
@@ -65,7 +72,7 @@ const MyOrders = () => {
                           )
                           .join(", ")}
                       </span>
-                      <span>Items : {order.items.length}</span>
+                      <span>Items: {order.items.length}</span>
                     </p>
                   </div>
                   <div>
@@ -79,10 +86,10 @@ const MyOrders = () => {
                   <p className="font-medium my-auto">{currency}{order.amount}</p>
                   <div>
                     <p className="flex flex-col">
-                      <span>Method : {order.paymentType || 'COD'}</span>
-                      <span>Date : {new Date(order.date).toLocaleDateString()}</span>
-                      <span>Payment : {order.isPaid ? 'Paid' : 'Pending'}</span>
-                      <span>Delivery : {order.deliveryStatus || 'Undelivered'}</span>
+                      <span>Method: {order.paymentType || 'COD'}</span>
+                      <span>Date: {new Date(order.date).toLocaleDateString()}</span>
+                      <span>Payment: {order.isPaid ? 'Paid' : 'Pending'}</span>
+                      <span>Delivery: {order.deliveryStatus || 'Undelivered'}</span>
                     </p>
                   </div>
                 </div>

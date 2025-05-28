@@ -1,12 +1,11 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { assets } from "@/assets/assets";
-import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
 import Footer from "@/components/seller/Footer";
 import Loading from "@/components/Loading";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 const Orders = () => {
   const { currency, getToken, user } = useAppContext();
@@ -17,11 +16,9 @@ const Orders = () => {
   const fetchSellerOrders = async () => {
     try {
       const token = await getToken();
-
-      const { data } = await axios.get(
-        '/api/order/seller-orders',
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const { data } = await axios.get('/api/order/seller-orders', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       if (data.success) {
         setOrders(data.orders);
@@ -29,7 +26,6 @@ const Orders = () => {
       } else {
         toast.error(data.message);
       }
-
     } catch (error) {
       toast.error(error.message);
     }
@@ -43,8 +39,8 @@ const Orders = () => {
       });
       if (data.success) {
         toast.success(data.message);
-        setLoading(true);              // Trigger loading
-        await fetchSellerOrders();    // Fetch fresh data
+        setLoading(true);
+        await fetchSellerOrders();
       } else {
         toast.error(data.message);
       }
@@ -60,19 +56,28 @@ const Orders = () => {
   }, [user]);
 
   return (
-    <div className="flex-1 h-screen overflow-scroll flex flex-col justify-between text-sm">
+    <div className="flex-1 h-screen overflow-scroll flex flex-col justify-between text-sm text-white bg-black">
       {loading ? <Loading /> : (
         <div className="md:p-10 p-4 space-y-5">
           <h2 className="text-lg font-medium">Orders</h2>
           <div className="max-w-4xl rounded-md">
             {orders.map((order, index) => (
-              <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-t border-gray-300">
+              <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-t border-gray-600">
                 <div className="flex-1 flex gap-5 max-w-80">
-                  <Image
-                    className="max-w-16 max-h-16 object-cover"
-                    src={assets.box_icon}
-                    alt="box_icon"
-                  />
+                  {/* Hiển thị ảnh sản phẩm nếu có */}
+                  {order.items[0]?.product?.image?.[0] ? (
+                    <Image
+                      className="w-16 h-16 object-cover rounded"
+                      src={order.items[0].product.image[0]}
+                      alt={order.items[0].product.name}
+                      width={64}
+                      height={64}
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gray-700 rounded flex items-center justify-center text-xs text-white">
+                      No Image
+                    </div>
+                  )}
                   <p className="flex flex-col gap-3">
                     <span className="font-medium">
                       {order.items
@@ -84,7 +89,7 @@ const Orders = () => {
                         .join(", ")
                       }
                     </span>
-                    <span>Items : {order.items.length}</span>
+                    <span>Items: {order.items.length}</span>
                   </p>
                 </div>
                 <div>
@@ -98,14 +103,14 @@ const Orders = () => {
                 <p className="font-medium my-auto">{currency}{order.amount}</p>
                 <div className="flex flex-col gap-1">
                   <p className="flex flex-col">
-                    <span>Method : {order.paymentType || 'COD'}</span>
-                    <span>Date : {new Date(order.date).toLocaleDateString()}</span>
-                    <span>Payment : {order.isPaid ? 'Paid' : 'Pending'}</span>
-                    <span>Delivery : {order.deliveryStatus || 'Undelivered'}</span>
+                    <span>Method: {order.paymentType || 'COD'}</span>
+                    <span>Date: {new Date(order.date).toLocaleDateString()}</span>
+                    <span>Payment: {order.isPaid ? 'Paid' : 'Pending'}</span>
+                    <span>Delivery: {order.deliveryStatus || 'Undelivered'}</span>
                   </p>
                   {order.deliveryStatus !== 'Delivered' && (
                     <button
-                      className="mt-2 px-4 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
+                      className="mt-2 px-4 py-1 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded hover:opacity-90 transition"
                       onClick={() => markAsDelivered(order._id)}
                     >
                       Mark as Delivered
