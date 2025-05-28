@@ -13,7 +13,7 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-white bg-black">
       <Image
-        className="cursor-pointer w-28 md:w-32"
+        className="cursor-pointer w-20 md:w-15"
         onClick={() => router.push('/')}
         src={assets.logo}
         alt="logo"
