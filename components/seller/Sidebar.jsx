@@ -14,12 +14,12 @@ const SideBar = () => {
     {
       name: 'Dashboard',
       path: '/seller/dashboard',
-      icon: assets.dashboard_icon || assets.box_icon, // fallback
+      icon: assets.dashboard_icon || assets.box_icon,
     },
   ];
 
   return (
-    <div className="md:w-64 w-16 min-h-screen py-2 flex flex-col text-white bg-[#000000]">
+    <div className="md:w-64 w-16 min-h-screen py-2 flex flex-col text-white bg-slate-900">
       {menuItems.map((item) => {
         const isActive = pathname === item.path;
 
@@ -28,8 +28,8 @@ const SideBar = () => {
             <div
               className={`flex items-center py-3 px-4 gap-3 transition-all duration-200 cursor-pointer
                 ${isActive
-                  ? "border-r-4 md:border-r-[6px] border-gradient-purple-500 bg-purple-900/20"
-                  : "hover:bg-gradient-to-r from-purple-500 to-purple-700 hover:text-white border-transparent"
+                  ? "border-r-4 md:border-r-[6px] border-purple-500 bg-purple-800/20"
+                  : "hover:bg-gradient-to-r from-purple-500 to-purple-700 hover:text-white"
                 }`}
             >
               <Image

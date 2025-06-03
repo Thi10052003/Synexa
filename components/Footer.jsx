@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="w-4/5">
           <Image className="w-20 md:w-20" src={assets.logo} alt="logo" />
           <p className="mt-6 text-sm">
-            QuickCart brings you closer to the future. Shop innovative tech, get unbeatable deals, and enjoy seamless service — all in one place.
+            Synexa brings you closer to the future. Shop innovative tech, get unbeatable deals, and enjoy seamless service — all in one place.
           </p>
         </div>
 
