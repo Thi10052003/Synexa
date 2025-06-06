@@ -19,7 +19,6 @@ export async function POST(request) {
     let productData = [];
     let amount = 0;
 
-    // 🔧 Loop over items instead of using async reduce
     for (const item of items) {
       const product = await Product.findById(item.product);
       if (!product) {
@@ -33,10 +32,9 @@ export async function POST(request) {
       amount += product.offerPrice * item.quantity;
     }
 
-    // 💵 Add 2% tax
     amount += Math.floor(amount * 0.02);
 
-    // 📝 Create order in DB first
+
     const order = await Order.create({
       userId,
       address,
@@ -46,7 +44,7 @@ export async function POST(request) {
       paymentType: "Stripe",
     });
 
-    // 💳 Create line items for Stripe
+
     const line_items = productData.map((item) => ({
       price_data: {
         currency: "usd",
@@ -56,7 +54,7 @@ export async function POST(request) {
       quantity: item.quantity,
     }));
 
-    // ✅ Create Stripe checkout session with metadata for webhook
+
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: "payment",

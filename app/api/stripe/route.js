@@ -14,31 +14,32 @@ export async function POST(request) {
     const event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     await connectDB();
 
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object;
-        const orderId = session.metadata.orderId;
-        const userId = session.metadata.userId;
+    // ✅ HANDLE payment_intent.succeeded chính xác
+    if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = event.data.object;
 
-        await Order.findByIdAndUpdate(orderId, { isPaid: true });
-        await User.findByIdAndUpdate(userId, { cartItems: {} });
-        break;
+      // Tìm checkout session theo payment_intent
+      const sessions = await stripe.checkout.sessions.list({
+        payment_intent: paymentIntent.id,
+        limit: 1,
+      });
+
+      const session = sessions.data[0];
+      const orderId = session?.metadata?.orderId;
+      const userId = session?.metadata?.userId;
+
+      if (!orderId || !userId) {
+        console.error("❌ Missing metadata");
+        return NextResponse.json({ message: "Metadata missing" }, { status: 400 });
       }
 
-      case "checkout.session.expired":
-      case "checkout.session.async_payment_failed": {
-        const session = event.data.object;
-        const orderId = session.metadata.orderId;
+      await Order.findByIdAndUpdate(orderId, { isPaid: true });
+      await User.findByIdAndUpdate(userId, { cartItems: {} });
 
-        await Order.findByIdAndDelete(orderId);
-        break;
-      }
-
-      default:
-        console.log(`Unhandled event type ${event.type}`);
+      return NextResponse.json({ received: true });
     }
 
-    return NextResponse.json({ received: true });
+    return NextResponse.json({ received: true }); // fallback cho các loại event khác
   } catch (error) {
     console.error("Stripe webhook error:", error);
     return NextResponse.json({ message: error.message }, { status: 400 });
