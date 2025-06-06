@@ -8,18 +8,18 @@ const SideBar = () => {
   const pathname = usePathname();
 
   const menuItems = [
-    { name: 'Add Product', path: '/seller', icon: assets.add_icon },
-    { name: 'Product List', path: '/seller/product-list', icon: assets.product_list_icon },
-    { name: 'Orders', path: '/seller/orders', icon: assets.order_icon },
+    { name: 'Add Product', path: '/seller', icon: assets.box },
+    { name: 'Product List', path: '/seller/product-list', icon: assets.box },
+    { name: 'Orders', path: '/seller/orders', icon: assets.box },
     {
       name: 'Dashboard',
       path: '/seller/dashboard',
-      icon: assets.dashboard_icon || assets.box_icon,
+      icon: assets.dashboard_icon || assets.box,
     },
   ];
 
   return (
-    <div className="md:w-64 w-16 min-h-screen py-2 flex flex-col text-white bg-slate-900">
+    <div className="md:w-64 w-16 min-h-screen py-2 flex flex-col text-black bg-grey">
       {menuItems.map((item) => {
         const isActive = pathname === item.path;
 

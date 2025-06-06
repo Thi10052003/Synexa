@@ -21,7 +21,15 @@ const Orders = () => {
       });
 
       if (data.success) {
-        setOrders(data.orders);
+        // Lọc bỏ những order có item null product
+        const filtered = data.orders
+          .map(order => ({
+            ...order,
+            items: order.items.filter(item => item.product !== null)
+          }))
+          .filter(order => order.items.length > 0);
+
+        setOrders(filtered);
         setLoading(false);
       } else {
         toast.error(data.message);
@@ -64,7 +72,6 @@ const Orders = () => {
             {orders.map((order, index) => (
               <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-t border-gray-600">
                 <div className="flex-1 flex gap-5 max-w-80">
-                  {/* Hiển thị ảnh sản phẩm nếu có */}
                   {order.items[0]?.product?.image?.[0] ? (
                     <Image
                       className="w-16 h-16 object-cover rounded"
@@ -80,14 +87,7 @@ const Orders = () => {
                   )}
                   <p className="flex flex-col gap-3">
                     <span className="font-medium">
-                      {order.items
-                        .map((item) =>
-                          item.product
-                            ? `${item.product.name} x ${item.quantity}`
-                            : `[Product removed] x ${item.quantity}`
-                        )
-                        .join(", ")
-                      }
+                      {order.items.map(item => `${item.product.name} x ${item.quantity}`).join(", ")}
                     </span>
                     <span>Items: {order.items.length}</span>
                   </p>

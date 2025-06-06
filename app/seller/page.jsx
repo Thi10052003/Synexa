@@ -15,6 +15,7 @@ const AddProduct = () => {
   const [category, setCategory] = useState('Earphone');
   const [price, setPrice] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
+  const [brand, setBrand] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ const AddProduct = () => {
     formData.append('category', category);
     formData.append('price', price);
     formData.append('offerPrice', offerPrice);
+    formData.append('brand', brand);
 
     for (let i = 0; i < files.length; i++) {
       formData.append('images', files[i]);
@@ -95,6 +97,18 @@ const AddProduct = () => {
             required
           />
         </div>
+        <div className="flex flex-col gap-1 max-w-md">
+          <label className="text-base font-medium" htmlFor="product-brand">Brand</label>
+          <input
+            id="product-brand"
+            type="text"
+            placeholder="E.g. Samsung, Sony, Apple..."
+            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40 bg-transparent text-white"
+            onChange={(e) => setBrand(e.target.value)}
+            value={brand}
+            required
+          />
+        </div>
 
         <div className="flex flex-col gap-1 max-w-md">
           <label className="text-base font-medium" htmlFor="product-description">Product Description</label>
@@ -125,6 +139,8 @@ const AddProduct = () => {
               <option value="Laptop">Laptop</option>
               <option value="Camera">Camera</option>
               <option value="Accessories">Accessories</option>
+              <option value="Gaming">Game</option>
+              <option value="Speaker">Speaker</option>
             </select>
           </div>
 

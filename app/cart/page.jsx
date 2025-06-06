@@ -8,7 +8,7 @@ import { useAppContext } from "@/context/AppContext";
 
 const Cart = () => {
   const { products, router, cartItems, addToCart, updateCartQuantity, getCartCount } = useAppContext();
-
+  
   return (
     <>
       <Navbar />
@@ -95,11 +95,6 @@ const Cart = () => {
             onClick={() => router.push('/all-products')}
             className="group flex items-center mt-6 gap-2 text-white bg-gradient-to-r from-purple-600 to-purple-400 px-4 py-2 rounded shadow-md hover:opacity-90"
           >
-            {/* <Image
-              className="group-hover:-translate-x-1 transition"
-              src={assets.arrow_right_icon_colored}
-              alt="arrow_right_icon_colored"
-            /> */}
             Continue Shopping
           </button>
         </div>

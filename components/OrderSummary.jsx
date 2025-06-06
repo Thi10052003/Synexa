@@ -7,7 +7,7 @@ import Image from 'next/image';
 import stripe_logo from '@/assets/stripe_logo.png';
 
 const OrderSummary = () => {
-  const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext();
+  const { currency, router, getToken, user, cartItems, setCartItems, products } = useAppContext();
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPlaceOrderClicked, setIsPlaceOrderClicked] = useState(false);
@@ -35,13 +35,33 @@ const OrderSummary = () => {
     setIsDropdownOpen(false);
   };
 
+  const getCartAmount = () => {
+    let total = 0;
+    for (let key in cartItems) {
+      const product = products.find(p => p._id === key);
+      if (product && product.offerPrice) {
+        total += product.offerPrice * cartItems[key];
+      }
+    }
+    return total;
+  };
+
+  const getCartCount = () => {
+    return Object.values(cartItems).reduce((acc, qty) => acc + qty, 0);
+  };
+
   const createOrder = async () => {
     try {
       if (!user) return toast('Please login to place order', { icon: '⚠️' });
       if (!selectedAddress) return toast.error('Please select an address');
-      let cartItemsArray = Object.keys(cartItems).map((key) => ({ product: key, quantity: cartItems[key] }))
+      
+      // Filter only valid product IDs that exist in current product list
+      const cartItemsArray = Object.keys(cartItems)
+        .filter(key => products.find(p => p._id === key))
+        .map((key) => ({ product: key, quantity: cartItems[key] }))
         .filter(item => item.quantity > 0);
-      if (cartItemsArray.length === 0) return toast.error('Cart is empty');
+
+      if (cartItemsArray.length === 0) return toast.error('Cart is empty or contains invalid items');
 
       const token = await getToken();
       const { data } = await axios.post('/api/order/create', {
@@ -67,9 +87,13 @@ const OrderSummary = () => {
     try {
       if (!user) return toast('Please login to place order', { icon: '⚠️' });
       if (!selectedAddress) return toast.error('Please select an address');
-      let cartItemsArray = Object.keys(cartItems).map((key) => ({ product: key, quantity: cartItems[key] }))
+      
+      const cartItemsArray = Object.keys(cartItems)
+        .filter(key => products.find(p => p._id === key))
+        .map((key) => ({ product: key, quantity: cartItems[key] }))
         .filter(item => item.quantity > 0);
-      if (cartItemsArray.length === 0) return toast.error('Cart is empty');
+
+      if (cartItemsArray.length === 0) return toast.error('Cart is empty or contains invalid items');
 
       const token = await getToken();
       const { data } = await axios.post('/api/order/stripe', {
@@ -190,16 +214,15 @@ const OrderSummary = () => {
           >
             Cash On Delivery
           </button>
-          <button onClick={createOrderStripe} className="w-full flex justify-center items-center border border-indigo-500 bg-white hover: bg-100 py-2 mt-5">
-                <Image
-                  className="w-12"
-                  src={stripe_logo}
-                  alt="Stripe Logo"
-                  width={80}
-                  height={30}
-                />
-
-              </button>
+          <button onClick={createOrderStripe} className="w-full flex justify-center items-center border border-indigo-500 bg-white hover:bg-gray-100 py-2 mt-5">
+            <Image
+              className="w-12"
+              src={stripe_logo}
+              alt="Stripe Logo"
+              width={80}
+              height={30}
+            />
+          </button>
         </div>
       )}
     </div>

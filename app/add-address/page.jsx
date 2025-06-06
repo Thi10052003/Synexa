@@ -47,7 +47,7 @@ const AddAddress = () => {
             <div className="px-6 md:px-16 lg:px-32 py-16 flex flex-col md:flex-row justify-between">
                 <form onSubmit={onSubmitHandler} className="w-full">
                     <p className="text-2xl md:text-3xl text-gray-500">
-                        Add Shipping <span className="font-semibold text-orange-600">Address</span>
+                        Add Shipping <span className="font-semibold text-purple-500">Address</span>
                     </p>
                     <div className="space-y-3 max-w-sm mt-10">
                         <input
@@ -96,7 +96,7 @@ const AddAddress = () => {
                             />
                         </div>
                     </div>
-                    <button type="submit" className="max-w-sm w-full mt-6 bg-orange-600 text-white py-3 hover:bg-orange-700 uppercase">
+                    <button type="submit" className="max-w-sm w-full mt-6 md:px-10 px-7 md:py-2.5 py-2 bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white font-medium hover:opacity-90 transition">
                         Save address
                     </button>
                 </form>

@@ -13,6 +13,9 @@ const ProductList = () => {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [updatedFields, setUpdatedFields] = useState({});
 
   const fetchSellerProduct = async () => {
     try {
@@ -31,6 +34,56 @@ const ProductList = () => {
       toast.error(error.message);
     }
   };
+  const openUpdateModal = (product) => {
+    setEditingProduct(product);
+    setUpdatedFields({
+      name: product.name,
+      brand: product.brand || "",
+      category: product.category,
+      price: product.price,
+      offerPrice: product.offerPrice
+    });
+    setShowModal(true);
+  };
+
+  const handleFieldChange = (field, value) => {
+    setUpdatedFields((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleUpdate = async () => {
+  try {
+    const token = await getToken();
+    const formData = new FormData();
+
+    formData.append("productId", editingProduct._id);
+    formData.append("name", updatedFields.name);
+    formData.append("brand", updatedFields.brand);
+    formData.append("category", updatedFields.category);
+    formData.append("price", updatedFields.price);
+    formData.append("offerPrice", updatedFields.offerPrice);
+
+    // Nếu bạn hỗ trợ đổi ảnh ở đây:
+    // formData.append('images', imageFile) // nếu có input file ảnh
+
+    const { data } = await axios.put('/api/product/update', formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    if (data.success) {
+      toast.success('Product updated');
+      setShowModal(false);
+      fetchSellerProduct();
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    toast.error('Update failed');
+  }
+};
+
 
   const handleDelete = async (productId) => {
     const confirmDelete = window.confirm('Do you want to delete this product?');
@@ -93,16 +146,12 @@ const ProductList = () => {
                     <td className="px-4 py-3 max-sm:hidden">
                       <div className="flex gap-2">
                         <button
-                          onClick={() => router.push(`/product/${product._id}`)}
-                          className="flex items-center gap-1 px-2.5 md:px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-md hover:opacity-90 transition"
+                          onClick={() => openUpdateModal(product)}
+                          className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                         >
-                          <span className="hidden md:block">Visit</span>
-                          <Image
-                            className="h-4"
-                            src={assets.redirect_icon}
-                            alt="redirect_icon"
-                          />
+                          Update
                         </button>
+
 
                         <button
                           onClick={() => handleDelete(product._id)}
@@ -119,6 +168,41 @@ const ProductList = () => {
           </div>
         </div>
       )}
+      {showModal && editingProduct && (
+  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div className="bg-white text-black p-6 rounded-lg w-full max-w-md space-y-4 shadow-lg">
+      <h2 className="text-xl font-semibold">Update Product</h2>
+
+      {["name", "brand", "category", "price", "offerPrice"].map((field) => (
+        <div key={field} className="flex flex-col">
+          <label className="text-sm font-medium capitalize">{field}</label>
+          <input
+            type={field.includes("price") ? "number" : "text"}
+            className="px-3 py-2 border border-gray-300 rounded"
+            value={updatedFields[field]}
+            onChange={(e) => handleFieldChange(field, e.target.value)}
+          />
+        </div>
+      ))}
+
+      <div className="flex justify-end gap-3 mt-4">
+        <button
+          onClick={() => setShowModal(false)}
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleUpdate}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       <Footer />
     </div>
   );
