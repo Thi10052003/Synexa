@@ -52,6 +52,10 @@ const ProductList = () => {
 
   const handleUpdate = async () => {
   try {
+    if (Number(updatedFields.offerPrice) >= Number(updatedFields.price)) {
+      toast.error('Offer price must be lower than price');
+      return;
+    }
     const token = await getToken();
     const formData = new FormData();
 

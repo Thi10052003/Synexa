@@ -79,9 +79,9 @@ const Product = () => {
             </div>
             <p className="text-gray-300 mt-3">{productData.description}</p>
             <p className="text-3xl font-medium mt-6">
-              ${productData.offerPrice ?? "N/A"}
+              {productData.offerPrice ?? "N/A"}
               <span className="text-base font-normal text-gray-400 line-through ml-2">
-                ${productData.price ?? "N/A"}
+                {productData.price ?? "N/A"}
               </span>
             </p>
             <hr className="bg-gray-600 my-6" />

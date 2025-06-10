@@ -19,6 +19,10 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (Number(offerPrice) >= Number(price)) {
+      toast.error('Offer price must be lower than price');
+      return;
+    }
     const formData = new FormData();
 
     formData.append('name', name);

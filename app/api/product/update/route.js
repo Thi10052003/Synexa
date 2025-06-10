@@ -40,8 +40,9 @@ export async function PUT(request) {
       const value = formData.get(field);
       if (value !== null) product[field] = field === "price" || field === "offerPrice" ? Number(value) : value;
     });
-
-    // Handle new image uploads (optional)
+    if (product.offerPrice >= product.price) {
+      return NextResponse.json({ success: false, message: "Offer price must be lower than price" });
+    }
     const files = formData.getAll("images");
     if (files && files.length > 0 && files[0].name) {
       const uploads = await Promise.all(

@@ -32,9 +32,12 @@ export async function POST(request) {
         const category = formData.get('category');
         const price = formData.get('price');
         const offerPrice = formData.get('offerPrice');
+        if (Number(offerPrice) >= Number(price)) {
+            return NextResponse.json({ success: false, message: 'Offer price must be lower than price' })
+        }
         const brand = formData.get('brand');
         const files = formData.getAll('images');
-
+        
         if (!files || files.length === 0) {
             return NextResponse.json({ success: false, message: 'no files uploaded' })
         }
