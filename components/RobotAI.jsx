@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Spline from '@splinetool/react-spline';
-import { FiMessageCircle } from 'react-icons/fi';
 
 const RobotAI = () => {
   const [showMessage, setShowMessage] = useState(true);
@@ -11,7 +10,7 @@ const RobotAI = () => {
   ]);
   const [input, setInput] = useState('');
 
-  // Tự động ẩn hiện tooltip lời chào
+  // Tooltip auto toggle
   useEffect(() => {
     const interval = setInterval(() => {
       setShowMessage(prev => !prev);
@@ -35,23 +34,28 @@ const RobotAI = () => {
   return (
     <div className="fixed bottom-6 right-6 flex flex-col items-end z-50">
       {/* Robot AI */}
-      <div className="relative">
-        {showMessage && (
+      <div className="relative pointer-events-auto">
+        {showMessage && !showChatBox && (
           <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2 rounded-full shadow-md text-sm whitespace-nowrap">
             💬 Hello, how can I help you?
           </div>
         )}
 
         {/* Robot */}
-        <div onClick={handleClick} className="cursor-pointer w-24 h-24 md:w-32 md:h-32">
+        <div 
+          onClick={handleClick} 
+          className="cursor-pointer w-20 h-20 md:w-28 md:h-28"
+          style={{ pointerEvents: 'auto' }}
+        >
           <Spline scene="https://prod.spline.design/TdsF5XyRrgvlMudf/scene.splinecode" />
         </div>
       </div>
 
       {/* Chat Box */}
       <div
-        className={`mt-4 w-80 bg-[#111] text-white rounded-lg shadow-xl overflow-hidden border border-gray-700 transform transition-all duration-300 
-        ${showChatBox ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'}`}
+        className={`mt-4 w-80 bg-[#111] text-white rounded-lg shadow-xl overflow-hidden border border-gray-700 transform transition-all duration-300
+        ${showChatBox ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-4 opacity-0 pointer-events-none'}`}
+        style={{ zIndex: 100 }}
       >
         {/* Header */}
         <div className="flex items-center justify-between bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2">
