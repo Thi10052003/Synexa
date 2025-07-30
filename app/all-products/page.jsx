@@ -11,7 +11,6 @@ const AllProducts = () => {
   const [sortOrder, setSortOrder] = useState("none"); // none | lowToHigh | highToLow
   const [filteredProducts, setFilteredProducts] = useState([]);
 
-  
   const categories = ["All", ...new Set(products.map(p => p.category))];
 
   useEffect(() => {
@@ -33,18 +32,20 @@ const AllProducts = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-start px-6 md:px-16 lg:px-32 text-white min-h-screen">
+      <div className="flex flex-col items-start px-4 md:px-16 lg:px-32 text-white min-h-screen">
+        {/* Header & Filters */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full pt-12 gap-6">
           <p className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-white to-purple-500 text-transparent bg-clip-text">
-            All products
+            All Products
           </p>
 
-          <div className="flex gap-4 flex-wrap">
+          {/* Filters Section */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
             {/* Category Filter */}
             <select
               value={selectedCategory}
               onChange={e => setSelectedCategory(e.target.value)}
-              className="bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded"
+              className="bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded w-full sm:w-auto"
             >
               {categories.map((cat, idx) => (
                 <option key={idx} value={cat}>{cat}</option>
@@ -55,7 +56,7 @@ const AllProducts = () => {
             <select
               value={sortOrder}
               onChange={e => setSortOrder(e.target.value)}
-              className="bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded"
+              className="bg-gray-800 border border-gray-600 text-white px-3 py-2 rounded w-full sm:w-auto"
             >
               <option value="none">Sort by Price</option>
               <option value="lowToHigh">Low to High</option>
@@ -65,7 +66,7 @@ const AllProducts = () => {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-10 pb-14 w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 mt-10 pb-14 w-full">
           {filteredProducts.map((product, index) => (
             <ProductCard key={index} product={product} />
           ))}

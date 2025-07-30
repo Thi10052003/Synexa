@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Spline from '@splinetool/react-spline';
+import { FiMessageCircle } from 'react-icons/fi';
 
 const RobotAI = () => {
   const [showMessage, setShowMessage] = useState(true);
@@ -10,6 +11,7 @@ const RobotAI = () => {
   ]);
   const [input, setInput] = useState('');
 
+  // Tự động ẩn hiện tooltip lời chào
   useEffect(() => {
     const interval = setInterval(() => {
       setShowMessage(prev => !prev);
@@ -17,13 +19,8 @@ const RobotAI = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleClick = () => {
-    setShowChatBox(true);
-  };
-
-  const handleClose = () => {
-    setShowChatBox(false);
-  };
+  const handleClick = () => setShowChatBox(true);
+  const handleClose = () => setShowChatBox(false);
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -36,61 +33,66 @@ const RobotAI = () => {
   };
 
   return (
-    <div className="relative w-full h-[600px] overflow-hidden rounded-xl my-16">
-      {showMessage && (
-        <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2 rounded-full shadow-md text-sm z-10">
-          💬 Hello, how can I help you?
-        </div>
-      )}
+    <div className="fixed bottom-6 right-6 flex flex-col items-end z-50">
+      {/* Robot AI */}
+      <div className="relative">
+        {showMessage && (
+          <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2 rounded-full shadow-md text-sm whitespace-nowrap">
+            💬 Hello, how can I help you?
+          </div>
+        )}
 
-      {/* 3D Robot */}
-      <div onClick={handleClick} className="cursor-pointer">
-        <Spline scene="https://prod.spline.design/TdsF5XyRrgvlMudf/scene.splinecode" />
+        {/* Robot */}
+        <div onClick={handleClick} className="cursor-pointer w-24 h-24 md:w-32 md:h-32">
+          <Spline scene="https://prod.spline.design/TdsF5XyRrgvlMudf/scene.splinecode" />
+        </div>
       </div>
 
       {/* Chat Box */}
-      {showChatBox && (
-  <div className="absolute bottom-6 right-6 w-80 bg-[#111] text-white rounded-lg shadow-xl z-20 overflow-hidden border border-gray-700">
-    
-    {/* Header Gradient Purple */}
-    <div className="flex items-center justify-between bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2">
-      <p className="font-semibold">AI Assistant</p>
-      <button onClick={handleClose} className="text-white font-bold">×</button>
-    </div>
-
-    {/* Chat messages */}
-    <div className="p-4 text-sm h-48 overflow-y-auto space-y-2">
-      {messages.map((msg, idx) => (
-        <div key={idx} className={`text-${msg.from === 'user' ? 'right' : 'left'}`}>
-          <span className={`inline-block px-3 py-2 rounded-lg max-w-[80%] 
-            ${msg.from === 'user' 
-              ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white' 
-              : 'bg-gray-800 text-white'}`}>
-            {msg.text}
-          </span>
-        </div>
-      ))}
-    </div>
-
-    {/* Input + Send button */}
-    <div className="flex items-center border-t border-gray-700 p-2 bg-[#111]">
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Type a message..."
-        className="flex-1 text-sm px-3 py-2 rounded bg-gray-900 text-white outline-none placeholder:text-gray-400"
-        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-      />
-      <button
-        onClick={sendMessage}
-        className="ml-2 px-3 py-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded text-sm"
+      <div
+        className={`mt-4 w-80 bg-[#111] text-white rounded-lg shadow-xl overflow-hidden border border-gray-700 transform transition-all duration-300 
+        ${showChatBox ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'}`}
       >
-        Send
-      </button>
-    </div>
-  </div>
-)}
+        {/* Header */}
+        <div className="flex items-center justify-between bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2">
+          <p className="font-semibold">AI Assistant</p>
+          <button onClick={handleClose} className="text-white font-bold">×</button>
+        </div>
+
+        {/* Chat messages */}
+        <div className="p-4 text-sm h-48 overflow-y-auto space-y-2">
+          {messages.map((msg, idx) => (
+            <div key={idx} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <span
+                className={`inline-block px-3 py-2 rounded-lg max-w-[80%] 
+                ${msg.from === 'user'
+                  ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white'
+                  : 'bg-gray-800 text-white'}`}
+              >
+                {msg.text}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Input */}
+        <div className="flex items-center border-t border-gray-700 p-2 bg-[#111]">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type a message..."
+            className="flex-1 text-sm px-3 py-2 rounded bg-gray-900 text-white outline-none placeholder:text-gray-400"
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          />
+          <button
+            onClick={sendMessage}
+            className="ml-2 px-3 py-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded text-sm"
+          >
+            Send
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

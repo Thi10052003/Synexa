@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 const HeaderSlider = () => {
   const [sliderData, setSliderData] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -38,63 +40,97 @@ const HeaderSlider = () => {
     setCurrentSlide(index);
   };
 
+  // --- SWIPE HANDLERS ---
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+    setDragOffset(0);
+  };
+
+  const handleTouchMove = (e) => {
+    const moveX = e.touches[0].clientX;
+    setDragOffset(moveX - touchStartX);
+  };
+
+  const handleTouchEnd = () => {
+    const threshold = 50;
+    if (dragOffset < -threshold) {
+      setCurrentSlide((prev) => (prev + 1) % sliderData.length);
+    } else if (dragOffset > threshold) {
+      setCurrentSlide((prev) =>
+        prev === 0 ? sliderData.length - 1 : prev - 1
+      );
+    }
+    setDragOffset(0);
+  };
+
   return (
-    <div className="overflow-hidden relative w-full">
+    <div
+      className="overflow-hidden relative w-full"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div
-        className="flex transition-transform duration-700 ease-in-out"
-        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+        className="flex transition-transform duration-500 ease-out"
+        style={{
+          transform: `translateX(calc(-${currentSlide * 100}% + ${dragOffset}px))`
+        }}
       >
-        {sliderData.map((product, index) => (
+        {sliderData.map((product) => (
           <div
             key={product._id}
-            className="flex flex-col-reverse md:flex-row items-center justify-between bg-black border border-white py-8 md:px-14 px-5 mt-6 rounded-xl min-w-full shadow-md"
+            className="flex flex-col-reverse md:flex-row items-center justify-between bg-black border border-white py-6 px-4 md:px-14 mt-4 rounded-xl min-w-full shadow-md"
           >
-            <div className="md:pl-8 mt-10 md:mt-0">
-              <p className="md:text-base text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-500 font-medium pb-1">
+            {/* Text Section */}
+            <div className="mt-6 md:mt-0 md:pl-8 text-center md:text-left">
+              <p className="text-sm md:text-base text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-500 font-medium pb-1">
                 Hot Deal!
               </p>
-              <h1 className="max-w-lg md:text-[40px] md:leading-[48px] text-2xl font-semibold text-white">
+              <h1 className="text-xl sm:text-2xl md:text-[40px] md:leading-[48px] font-semibold text-white max-w-md">
                 {product.name}
               </h1>
-              <div className="flex items-center mt-4 md:mt-6">
-                {/* Gradient purple button */}
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 mt-4 md:mt-6">
+                {/* Buy Now */}
                 <button
                   onClick={() => router.push(`/product/${product._id}`)}
-                  className="md:px-10 px-7 md:py-2.5 py-2 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-full text-white font-medium hover:opacity-90 transition"
+                  className="px-6 sm:px-8 py-2 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-full text-white text-sm sm:text-base font-medium hover:opacity-90 transition w-full sm:w-auto"
                 >
                   Buy now
                 </button>
 
-                {/* Gradient border that turns filled on hover */}
+                {/* Details */}
                 <button
                   onClick={() => router.push(`/product/${product._id}`)}
-                  className="ml-4 flex items-center gap-2 px-6 py-2.5 text-white font-medium border rounded-full border-transparent bg-transparent transition group
-                             border-[1px] border-[rgba(168,85,247,0.8)] hover:bg-gradient-to-r from-purple-500 to-fuchsia-500"
+                  className="flex items-center justify-center gap-2 px-5 py-2 text-sm sm:text-base text-white font-medium border rounded-full border-[rgba(168,85,247,0.8)] hover:bg-gradient-to-r from-purple-500 to-fuchsia-500 transition w-full sm:w-auto"
                 >
-                  <span className="group-hover:text-white text-white">Details</span>
+                  <span>Details</span>
                   <Image
                     className="group-hover:translate-x-1 transition"
                     src={assets.arrow_icon}
                     alt="arrow_icon"
+                    loading="lazy"
                   />
                 </button>
               </div>
             </div>
 
+            {/* Image Section */}
             <div className="flex items-center flex-1 justify-center">
               <Image
-                className="md:w-72 w-48 object-contain"
+                className="w-40 sm:w-52 md:w-72 object-contain"
                 src={product.image[0]}
                 alt={product.name}
                 width={300}
                 height={300}
+                loading="lazy" // ⬅️ Lazy load ảnh sản phẩm
               />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-center gap-2 mt-8">
+      {/* Dots */}
+      <div className="flex items-center justify-center gap-2 mt-4 md:mt-8">
         {sliderData.map((_, index) => (
           <div
             key={index}
@@ -102,7 +138,7 @@ const HeaderSlider = () => {
             className={`h-2 w-2 rounded-full cursor-pointer ${
               currentSlide === index ? 'bg-purple-500' : 'bg-white/20'
             }`}
-          ></div>
+          />
         ))}
       </div>
     </div>
