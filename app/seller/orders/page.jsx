@@ -21,7 +21,6 @@ const Orders = () => {
       });
 
       if (data.success) {
-        // Lọc bỏ những order có item null product
         const filtered = data.orders
           .map(order => ({
             ...order,
@@ -64,53 +63,63 @@ const Orders = () => {
   }, [user]);
 
   return (
-    <div className="flex-1 h-screen overflow-scroll flex flex-col justify-between text-sm text-white bg-black">
+    <div className="flex-1 min-h-screen flex flex-col justify-between text-sm text-white bg-black">
       {loading ? <Loading /> : (
         <div className="md:p-10 p-4 space-y-5">
           <h2 className="text-lg font-medium">Orders</h2>
-          <div className="max-w-4xl rounded-md">
+
+          <div className="space-y-4">
             {orders.map((order, index) => (
-              <div key={index} className="flex flex-col md:flex-row gap-5 justify-between p-5 border-t border-gray-600">
-                <div className="flex-1 flex gap-5 max-w-80">
-                  {order.items[0]?.product?.image?.[0] ? (
-                    <Image
-                      className="w-16 h-16 object-cover rounded"
-                      src={order.items[0].product.image[0]}
-                      alt={order.items[0].product.name}
-                      width={64}
-                      height={64}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-700 rounded flex items-center justify-center text-xs text-white">
-                      No Image
+              <div
+                key={index}
+                className="flex flex-col md:flex-row gap-4 md:gap-5 justify-between p-4 border rounded-md border-gray-600 bg-gray-900"
+              >
+                {/* Product Info */}
+                <div className="flex flex-col md:flex-row md:flex-1 gap-3">
+                  <div className="flex gap-3">
+                    {order.items[0]?.product?.image?.[0] ? (
+                      <Image
+                        className="w-16 h-16 object-cover rounded"
+                        src={order.items[0].product.image[0]}
+                        alt={order.items[0].product.name}
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-700 rounded flex items-center justify-center text-xs">
+                        No Image
+                      </div>
+                    )}
+                    <div className="flex flex-col">
+                      <span className="font-medium text-sm">
+                        {order.items.map(item => `${item.product.name} x ${item.quantity}`).join(", ")}
+                      </span>
+                      <span className="text-gray-400 text-xs">Items: {order.items.length}</span>
                     </div>
-                  )}
-                  <p className="flex flex-col gap-3">
-                    <span className="font-medium">
-                      {order.items.map(item => `${item.product.name} x ${item.quantity}`).join(", ")}
-                    </span>
-                    <span>Items: {order.items.length}</span>
-                  </p>
+                  </div>
                 </div>
-                <div>
-                  <p>
-                    <span className="font-medium">{order.address.fullName}</span><br />
-                    <span>{order.address.area}</span><br />
-                    <span>{`${order.address.city}, ${order.address.state}`}</span><br />
-                    <span>{order.address.phoneNumber}</span>
-                  </p>
+
+                {/* Address */}
+                <div className="flex flex-col text-xs md:text-sm md:w-1/4">
+                  <p className="font-medium">{order.address.fullName}</p>
+                  <p>{order.address.area}</p>
+                  <p>{`${order.address.city}, ${order.address.state}`}</p>
+                  <p>{order.address.phoneNumber}</p>
                 </div>
-                <p className="font-medium my-auto">{currency}{order.amount}</p>
-                <div className="flex flex-col gap-1">
-                  <p className="flex flex-col">
-                    <span>Method: {order.paymentType || 'COD'}</span>
-                    <span>Date: {new Date(order.date).toLocaleDateString()}</span>
-                    <span>Payment: {order.isPaid ? 'Paid' : 'Pending'}</span>
-                    <span>Delivery: {order.deliveryStatus || 'Undelivered'}</span>
-                  </p>
+
+                {/* Price */}
+                <p className="font-medium my-auto md:text-right">{currency}{order.amount}</p>
+
+                {/* Payment & Delivery */}
+                <div className="flex flex-col text-xs md:text-sm gap-1 md:items-end">
+                  <p>Method: {order.paymentType || 'COD'}</p>
+                  <p>Date: {new Date(order.date).toLocaleDateString()}</p>
+                  <p>Payment: {order.isPaid ? 'Paid' : 'Pending'}</p>
+                  <p>Delivery: {order.deliveryStatus || 'Undelivered'}</p>
+
                   {order.deliveryStatus !== 'Delivered' && (
                     <button
-                      className="mt-2 px-4 py-1 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded hover:opacity-90 transition"
+                      className="mt-2 px-3 py-1 bg-purple-700 text-white rounded hover:bg-purple-800 transition text-xs md:text-sm"
                       onClick={() => markAsDelivered(order._id)}
                     >
                       Mark as Delivered

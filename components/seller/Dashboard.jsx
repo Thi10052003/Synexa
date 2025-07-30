@@ -21,6 +21,12 @@ const Dashboard = () => {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
 
+  // Collapsible chart states
+  const [showRevenue, setShowRevenue] = useState(false);
+  const [showOrders, setShowOrders] = useState(false);
+  const [showProducts, setShowProducts] = useState(false);
+  const [showPayments, setShowPayments] = useState(false);
+
   const fetchDashboardData = async () => {
     try {
       const token = await getToken();
@@ -50,108 +56,180 @@ const Dashboard = () => {
   const COLORS = ['#8b5cf6', '#10b981', '#f472b6', '#f97316'];
 
   return (
-    <div className="p-6 bg-black min-h-screen text-white">
-      <h2 className="text-2xl font-semibold mb-6">Seller Dashboard</h2>
+    <div className="p-4 md:p-6 bg-black min-h-screen text-white">
+      <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center md:text-left">
+        Seller Dashboard
+      </h2>
 
-      <div className="mb-6 flex items-center gap-4">
-        <label className="text-sm font-medium">Month:</label>
-        <select
-          value={month}
-          onChange={(e) => setMonth(Number(e.target.value))}
-          className="border rounded px-2 py-1 text-black"
-        >
-          {Array.from({ length: 12 }, (_, i) => (
-            <option key={i + 1} value={i + 1}>{i + 1}</option>
-          ))}
-        </select>
-
-        <label className="text-sm font-medium">Year:</label>
-        <input
-          type="number"
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          className="border rounded px-2 py-1 w-24 text-black"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-900 shadow-md rounded-xl p-6">
-          <p className="text-gray-400">Total Revenue</p>
-          <h3 className="text-3xl font-bold">{currency}{metrics.totalSales}</h3>
+      {/* Filters */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Month:</label>
+          <select
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+            className="border rounded px-2 py-1 text-black text-sm"
+          >
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>{i + 1}</option>
+            ))}
+          </select>
         </div>
-        <div className="bg-gray-900 shadow-md rounded-xl p-6">
-          <p className="text-gray-400">Total Orders</p>
-          <h3 className="text-3xl font-bold">{metrics.totalOrders}</h3>
-        </div>
-        <div className="bg-gray-900 shadow-md rounded-xl p-6">
-          <p className="text-gray-400">Items Sold</p>
-          <h3 className="text-3xl font-bold">{metrics.totalItemsSold}</h3>
+
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Year:</label>
+          <input
+            type="number"
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="border rounded px-2 py-1 w-24 text-black text-sm"
+          />
         </div>
       </div>
 
+      {/* Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="bg-gray-900 shadow-md rounded-xl p-4 text-center sm:text-left">
+          <p className="text-gray-400 text-sm">Total Revenue</p>
+          <h3 className="text-2xl md:text-3xl font-bold">{currency}{metrics.totalSales}</h3>
+        </div>
+        <div className="bg-gray-900 shadow-md rounded-xl p-4 text-center sm:text-left">
+          <p className="text-gray-400 text-sm">Total Orders</p>
+          <h3 className="text-2xl md:text-3xl font-bold">{metrics.totalOrders}</h3>
+        </div>
+        <div className="bg-gray-900 shadow-md rounded-xl p-4 text-center sm:text-left">
+          <p className="text-gray-400 text-sm">Items Sold</p>
+          <h3 className="text-2xl md:text-3xl font-bold">{metrics.totalItemsSold}</h3>
+        </div>
+      </div>
+
+      {/* Collapsible Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-gray-900 shadow-md rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Revenue Chart (Last 7 Days)</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={filteredData}>
-              <Line type="monotone" dataKey="revenue" stroke="#a78bfa" strokeWidth={3} />
-              <CartesianGrid stroke="#444" strokeDasharray="5 5" />
-              <XAxis dataKey="date" stroke="#ccc" />
-              <YAxis stroke="#ccc" />
-              <Tooltip contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "#fff" }} />
-            </LineChart>
-          </ResponsiveContainer>
+        {/* Revenue */}
+        <div className="bg-gray-900 shadow-md rounded-xl p-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg md:text-xl font-semibold">Revenue (Last 7 Days)</h3>
+            <button
+              onClick={() => setShowRevenue(!showRevenue)}
+              className="text-sm text-purple-400 hover:underline md:hidden"
+            >
+              {showRevenue ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {(showRevenue || window.innerWidth >= 768) && (
+            <div className="w-full overflow-x-auto">
+              <div className="min-w-[300px] h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={filteredData}>
+                    <Line type="monotone" dataKey="revenue" stroke="#a78bfa" strokeWidth={3} />
+                    <CartesianGrid stroke="#444" strokeDasharray="5 5" />
+                    <XAxis dataKey="date" stroke="#ccc" />
+                    <YAxis stroke="#ccc" />
+                    <Tooltip contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "#fff" }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="bg-gray-900 shadow-md rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Order Volume Chart (Last 7 Days)</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={filteredData}>
-              <Line type="monotone" dataKey="orders" stroke="#34d399" strokeWidth={3} />
-              <CartesianGrid stroke="#444" strokeDasharray="5 5" />
-              <XAxis dataKey="date" stroke="#ccc" />
-              <YAxis stroke="#ccc" />
-              <Tooltip contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "#fff" }} />
-            </LineChart>
-          </ResponsiveContainer>
+        {/* Orders */}
+        <div className="bg-gray-900 shadow-md rounded-xl p-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg md:text-xl font-semibold">Orders (Last 7 Days)</h3>
+            <button
+              onClick={() => setShowOrders(!showOrders)}
+              className="text-sm text-green-400 hover:underline md:hidden"
+            >
+              {showOrders ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {(showOrders || window.innerWidth >= 768) && (
+            <div className="w-full overflow-x-auto">
+              <div className="min-w-[300px] h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={filteredData}>
+                    <Line type="monotone" dataKey="orders" stroke="#34d399" strokeWidth={3} />
+                    <CartesianGrid stroke="#444" strokeDasharray="5 5" />
+                    <XAxis dataKey="date" stroke="#ccc" />
+                    <YAxis stroke="#ccc" />
+                    <Tooltip contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "#fff" }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Bottom Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <div className="bg-gray-900 shadow-md rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Top Selling Products</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={metrics.topProducts}>
-              <CartesianGrid stroke="#444" strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#ccc" />
-              <YAxis stroke="#ccc" />
-              <Tooltip contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "#fff" }} />
-              <Bar dataKey="quantity" fill="#8b5cf6" />
-            </BarChart>
-          </ResponsiveContainer>
+        {/* Products */}
+        <div className="bg-gray-900 shadow-md rounded-xl p-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg md:text-xl font-semibold">Top Selling Products</h3>
+            <button
+              onClick={() => setShowProducts(!showProducts)}
+              className="text-sm text-purple-400 hover:underline md:hidden"
+            >
+              {showProducts ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {(showProducts || window.innerWidth >= 768) && (
+            <div className="w-full overflow-x-auto">
+              <div className="min-w-[300px] h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={metrics.topProducts}>
+                    <CartesianGrid stroke="#444" strokeDasharray="3 3" />
+                    <XAxis dataKey="name" stroke="#ccc" />
+                    <YAxis stroke="#ccc" />
+                    <Tooltip contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "#fff" }} />
+                    <Bar dataKey="quantity" fill="#8b5cf6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="bg-gray-900 shadow-md rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Payment Method Breakdown</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={Object.entries(metrics.paymentMethods || {}).map(([type, value], i) => ({
-                  name: type,
-                  value
-                }))}
-                cx="50%" cy="50%" outerRadius={100}
-                label
-                dataKey="value"
-              >
-                {Object.keys(metrics.paymentMethods || {}).map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Legend />
-              <Tooltip contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "#fff" }} />
-            </PieChart>
-          </ResponsiveContainer>
+        {/* Payments */}
+        <div className="bg-gray-900 shadow-md rounded-xl p-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg md:text-xl font-semibold">Payment Methods</h3>
+            <button
+              onClick={() => setShowPayments(!showPayments)}
+              className="text-sm text-pink-400 hover:underline md:hidden"
+            >
+              {showPayments ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {(showPayments || window.innerWidth >= 768) && (
+            <div className="w-full flex justify-center">
+              <div className="h-64 w-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={Object.entries(metrics.paymentMethods || {}).map(([type, value]) => ({
+                        name: type,
+                        value
+                      }))}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={90}
+                      label
+                      dataKey="value"
+                    >
+                      {Object.keys(metrics.paymentMethods || {}).map((_, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Legend />
+                    <Tooltip contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "#fff" }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
