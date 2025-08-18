@@ -26,7 +26,16 @@ const Dashboard = () => {
   const [showOrders, setShowOrders] = useState(false);
   const [showProducts, setShowProducts] = useState(false);
   const [showPayments, setShowPayments] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const checkWidth = () => setIsDesktop(window.innerWidth >= 768);
+    checkWidth();
+    window.addEventListener("resize", checkWidth);
+    return () => window.removeEventListener("resize", checkWidth);
+  }
+}, []);
   const fetchDashboardData = async () => {
     try {
       const token = await getToken();
@@ -116,7 +125,7 @@ const Dashboard = () => {
               {showRevenue ? 'Hide' : 'Show'}
             </button>
           </div>
-          {(showRevenue || window.innerWidth >= 768) && (
+          {(showRevenue || isDesktop) && (
             <div className="w-full overflow-x-auto">
               <div className="min-w-[300px] h-64">
                 <ResponsiveContainer width="100%" height="100%">
