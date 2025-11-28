@@ -96,7 +96,7 @@ const AddAddress = () => {
                             />
                         </div>
                     </div>
-                    <button type="submit" className="max-w-sm w-full mt-6 md:px-10 px-7 md:py-2.5 py-2 bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white font-medium hover:opacity-90 transition">
+                    <button type="submit" className="max-w-sm w-full mt-6 md:px-10 px-7 md:py-2.5 py-2 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 text-white font-medium hover:opacity-90 transition">
                         Save address
                     </button>
                 </form>

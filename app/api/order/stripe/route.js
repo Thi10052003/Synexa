@@ -34,7 +34,6 @@ export async function POST(request) {
 
     amount += Math.floor(amount * 0.02);
 
-
     const order = await Order.create({
       userId,
       address,
@@ -42,21 +41,18 @@ export async function POST(request) {
       amount,
       date: Date.now(),
       paymentType: "Stripe",
+      isPaid: false,
     });
 
-
-    const line_items = productData.map((item) => ({
-      price_data: {
-        currency: "usd",
-        product_data: { name: item.name },
-        unit_amount: item.price * 100,
-      },
-      quantity: item.quantity,
-    }));
-
-
     const session = await stripe.checkout.sessions.create({
-      line_items,
+      line_items: productData.map((item) => ({
+        price_data: {
+          currency: "usd",
+          product_data: { name: item.name },
+          unit_amount: item.price * 100,
+        },
+        quantity: item.quantity,
+      })),
       mode: "payment",
       success_url: `${origin}/order-placed`,
       cancel_url: `${origin}/cart`,
@@ -65,8 +61,12 @@ export async function POST(request) {
         userId,
       },
     });
+    return NextResponse.json({
+      success: true,
+      url: session.url,
+      orderId: order._id.toString(),
+    });
 
-    return NextResponse.json({ success: true, url: session.url });
   } catch (error) {
     console.error("Stripe session error:", error.message);
     return NextResponse.json({ success: false, message: error.message });

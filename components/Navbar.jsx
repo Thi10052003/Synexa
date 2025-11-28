@@ -13,7 +13,13 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="flex items-center justify-between px-4 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-white bg-black relative">
+    <nav className="
+      flex items-center justify-between 
+      px-4 md:px-16 lg:px-32 py-3 
+      border-b border-gray-300 
+      text-gray-800 bg-white
+      relative shadow-sm
+    ">
       {/* Logo */}
       <Image
         className="cursor-pointer w-20 md:w-16"
@@ -24,15 +30,18 @@ const Navbar = () => {
 
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-4 lg:gap-8">
-        <Link href="/" className="hover:text-purple-400 transition">Home</Link>
-        <Link href="/all-products" className="hover:text-purple-400 transition">Shop</Link>
-        <Link href="/" className="hover:text-purple-400 transition">About Us</Link>
-        <Link href="/" className="hover:text-purple-400 transition">Contact</Link>
+        <Link href="/" className="hover:text-purple-600 transition">Home</Link>
+        <Link href="/all-products" className="hover:text-purple-600 transition">Shop</Link>
 
         {isSeller && (
           <button
-            onClick={() => router.push("/seller")}
-            className="text-xs border px-4 py-1.5 rounded-full border-white hover:bg-white hover:text-black transition"
+            onClick={() => router.push("/seller/dashboard")}
+            className="
+              text-xs px-4 py-1.5 rounded-full 
+              border border-gray-400 
+              hover:bg-purple-50 hover:border-purple-400 hover:text-purple-700
+              transition
+            "
           >
             Seller Dashboard
           </button>
@@ -40,21 +49,30 @@ const Navbar = () => {
       </div>
 
       {/* Desktop User Section */}
-      <ul className="hidden md:flex items-center gap-4 text-white">
-        <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
+      <ul className="hidden md:flex items-center gap-4 text-gray-800">
+        <Image className="w-4 h-4 cursor-pointer" src={assets.search_icon} alt="search icon" />
+
         {user ? (
           <UserButton>
             <UserButton.MenuItems>
-              <UserButton.Action label="Cart" labelIcon={<CartIcon />} onClick={() => router.push("/cart")} />
+              <UserButton.Action
+                label="Cart"
+                labelIcon={<CartIcon />}
+                onClick={() => router.push("/cart")}
+              />
             </UserButton.MenuItems>
             <UserButton.MenuItems>
-              <UserButton.Action label="My Orders" labelIcon={<BagIcon />} onClick={() => router.push("/my-orders")} />
+              <UserButton.Action
+                label="My Orders"
+                labelIcon={<BagIcon />}
+                onClick={() => router.push("/my-orders")}
+              />
             </UserButton.MenuItems>
           </UserButton>
         ) : (
           <button
             onClick={openSignIn}
-            className="flex items-center gap-2 hover:text-purple-400 transition"
+            className="flex items-center gap-2 hover:text-purple-600 transition"
           >
             <Image src={assets.user_icon} alt="user icon" />
             Account
@@ -63,8 +81,7 @@ const Navbar = () => {
       </ul>
 
       {/* Mobile Right Section */}
-      <div className="flex items-center md:hidden gap-3 text-white">
-        {/* Hamburger menu for mobile */}
+      <div className="flex items-center md:hidden gap-3 text-gray-800">
         <button onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -72,11 +89,17 @@ const Navbar = () => {
 
       {/* Mobile Dropdown Menu */}
       {menuOpen && (
-        <div className="absolute top-full left-0 w-full bg-black border-t border-gray-700 flex flex-col p-4 gap-4 md:hidden z-50">
-          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">Home</Link>
-          <Link href="/all-products" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">Shop</Link>
-          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">About Us</Link>
-          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-purple-400 transition">Contact</Link>
+        <div className="
+          absolute top-full left-0 
+          w-full bg-white 
+          border-t border-gray-200 
+          flex flex-col p-4 gap-4 
+          md:hidden z-50 shadow-md
+        ">
+          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-purple-600 transition">Home</Link>
+          <Link href="/all-products" onClick={() => setMenuOpen(false)} className="hover:text-purple-600 transition">Shop</Link>
+          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-purple-600 transition">About Us</Link>
+          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-purple-600 transition">Contact</Link>
 
           {isSeller && (
             <button
@@ -84,7 +107,12 @@ const Navbar = () => {
                 router.push("/seller");
                 setMenuOpen(false);
               }}
-              className="text-xs border px-4 py-1.5 rounded-full border-white hover:bg-white hover:text-black transition"
+              className="
+                text-xs border px-4 py-1.5 rounded-full 
+                border-gray-400 hover:border-purple-400 
+                hover:bg-purple-50 hover:text-purple-700 
+                transition
+              "
             >
               Seller Dashboard
             </button>
@@ -93,16 +121,32 @@ const Navbar = () => {
           {user ? (
             <UserButton>
               <UserButton.MenuItems>
-                <UserButton.Action label="Home" labelIcon={<HomeIcon />} onClick={() => router.push("/")} />
+                <UserButton.Action
+                  label="Home"
+                  labelIcon={<HomeIcon />}
+                  onClick={() => router.push("/")}
+                />
               </UserButton.MenuItems>
               <UserButton.MenuItems>
-                <UserButton.Action label="Products" labelIcon={<BoxIcon />} onClick={() => router.push("/all-products")} />
+                <UserButton.Action
+                  label="Products"
+                  labelIcon={<BoxIcon />}
+                  onClick={() => router.push("/all-products")}
+                />
               </UserButton.MenuItems>
               <UserButton.MenuItems>
-                <UserButton.Action label="Cart" labelIcon={<CartIcon />} onClick={() => router.push("/cart")} />
+                <UserButton.Action
+                  label="Cart"
+                  labelIcon={<CartIcon />}
+                  onClick={() => router.push("/cart")}
+                />
               </UserButton.MenuItems>
               <UserButton.MenuItems>
-                <UserButton.Action label="My Orders" labelIcon={<BagIcon />} onClick={() => router.push("/my-orders")} />
+                <UserButton.Action
+                  label="My Orders"
+                  labelIcon={<BagIcon />}
+                  onClick={() => router.push("/my-orders")}
+                />
               </UserButton.MenuItems>
             </UserButton>
           ) : (
@@ -111,7 +155,7 @@ const Navbar = () => {
                 openSignIn();
                 setMenuOpen(false);
               }}
-              className="flex items-center gap-2 hover:text-purple-400 transition"
+              className="flex items-center gap-2 hover:text-purple-600 transition"
             >
               <Image src={assets.user_icon} alt="user icon" />
               Account

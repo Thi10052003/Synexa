@@ -17,7 +17,7 @@ export async function POST(request) {
 
     await connectDB();
 
-    // Calculate total amount
+    // Calculate amount
     let amount = 0;
     for (const item of items) {
       const product = await Product.findById(item.product);
@@ -27,10 +27,9 @@ export async function POST(request) {
       amount += product.offerPrice * item.quantity;
     }
 
-    // Add 2% tax
-    amount += Math.floor(amount * 0.02);
+    amount += Math.floor(amount * 0.02); // 2% tax
 
-    // Save order to database
+    // Create order
     const order = await Order.create({
       userId,
       address,
@@ -41,28 +40,31 @@ export async function POST(request) {
       isPaid: false,
     });
 
-    // Optional: send to Inngest for analytics or processing
+    // Send to Inngest
     await inngest.send({
       name: "order/created",
       data: {
         orderId: order._id.toString(),
         userId,
+        amount,
         address,
         items,
-        amount,
-        date: Date.now(),
-        paymentType: "COD",
       },
     });
 
-    // Clear user's cart
+    // Clear cart
     const user = await User.findById(userId);
     if (user) {
       user.cartItems = {};
       await user.save();
     }
 
-    return NextResponse.json({ success: true, message: "Order Placed" });
+    return NextResponse.json({
+      success: true,
+      message: "Order Placed",
+      orderId: order._id.toString(),
+    });
+
   } catch (error) {
     console.error("COD order error:", error);
     return NextResponse.json({ success: false, message: error.message });

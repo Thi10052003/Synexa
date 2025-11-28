@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { assets } from "@/assets/assets";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import Loading from "@/components/Loading";
 import { useAppContext } from "@/context/AppContext";
+import { trackEvent } from "@/lib/tracker";
 import React from "react";
 
 const Product = () => {
@@ -16,6 +17,22 @@ const Product = () => {
 
   const [mainImage, setMainImage] = useState(null);
   const [productData, setProductData] = useState(null);
+
+  const viewStart = useRef(Date.now());
+
+  useEffect(() => {
+    if (id) {
+      trackEvent("product_view", { product_id: id });
+    }
+
+    return () => {
+      const duration = (Date.now() - viewStart.current) / 1000;
+      trackEvent("product_view_end", {
+        product_id: id,
+        time_on_page_seconds: duration,
+      });
+    };
+  }, [id]);
 
   useEffect(() => {
     if (products?.length > 0) {
@@ -29,35 +46,65 @@ const Product = () => {
 
   if (!productData) return <Loading />;
 
+  const handleAddToCart = () => {
+    trackEvent("add_to_cart", {
+      product_id: productData._id,
+      qty: 1,
+      price: productData.offerPrice ?? productData.price,
+    });
+
+    addToCart(productData._id);
+  };
+
+  const handleBuyNow = () => {
+    trackEvent("buy_now", {
+      product_id: productData._id,
+      price: productData.offerPrice ?? productData.price,
+    });
+
+    addToCart(productData._id);
+    router.push(user ? "/cart" : "");
+  };
+
   return (
     <>
       <Navbar />
-      <div className="px-4 md:px-16 lg:px-32 pt-14 space-y-10 text-white bg-black-900">
+
+      {/* MAIN WRAPPER */}
+      <div className="px-4 md:px-16 lg:px-32 pt-14 space-y-10 text-black bg-white">
+
+        {/* TOP SECTION */}
         <div className="flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-16">
-          {/* Image Gallery */}
+
+          {/* Images Section */}
           <div className="px-0 md:px-5 lg:px-16 xl:px-20">
-            <div className="rounded-lg overflow-hidden bg-white mb-4">
+            <div className="rounded-lg overflow-hidden bg-white mb-4 shadow-sm">
               <Image
                 src={mainImage || productData.image?.[0]}
                 alt="main product"
-                className="w-full h-auto object-cover"
+                className="w-full h-auto object-contain"
                 width={1280}
                 height={720}
               />
             </div>
 
-            {/* Thumbnails - Horizontal scroll on mobile */}
             <div className="flex md:grid md:grid-cols-4 gap-3 overflow-x-auto">
               {productData.image?.map((img, idx) => (
                 <div
                   key={idx}
-                  onClick={() => setMainImage(img)}
-                  className="cursor-pointer flex-shrink-0 rounded-lg overflow-hidden bg-white w-20 h-20 md:w-auto md:h-auto"
+                  onClick={() => {
+                    trackEvent("product_variant_click", {
+                      product_id: productData._id,
+                      image_index: idx,
+                    });
+                    setMainImage(img);
+                  }}
+                  className="cursor-pointer flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 bg-white w-20 h-20 md:w-auto md:h-auto p-1 shadow-sm"
                 >
                   <Image
                     src={img}
                     alt={`image ${idx}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                     width={1280}
                     height={720}
                   />
@@ -68,59 +115,55 @@ const Product = () => {
 
           {/* Info Section */}
           <div className="flex flex-col">
-            <h1 className="text-2xl md:text-3xl font-medium mb-4">{productData.name}</h1>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-0.5">
-                {[...Array(4)].map((_, idx) => (
-                  <Image key={idx} className="h-4 w-4" src={assets.star_icon} alt="star" />
-                ))}
-                <Image className="h-4 w-4" src={assets.star_dull_icon} alt="half star" />
-              </div>
-              <p className="text-sm">(4.5)</p>
-            </div>
-            <p className="text-gray-300 mt-3 text-sm md:text-base">{productData.description}</p>
-            <p className="text-2xl md:text-3xl font-medium mt-6">
-              {productData.offerPrice ?? "N/A"}
-              <span className="text-sm md:text-base font-normal text-gray-400 line-through ml-2">
-                {productData.price ?? "N/A"}
+
+            <h1 className="text-2xl md:text-3xl font-semibold mb-4">
+              {productData.name}
+            </h1>
+
+            <p className="text-gray-700 mt-3 text-sm md:text-base leading-relaxed">
+              {productData.description}
+            </p>
+
+            {/* PRICE */}
+            <p className="text-2xl font-bold text-orange-600 mt-4 mb-6">
+              {productData.offerPrice}
+              <span className="text-gray-400 line-through ml-3 text-lg">
+                {productData.price}
               </span>
             </p>
-            <hr className="bg-gray-600 my-6" />
 
-            {/* Product Details */}
+            {/* TABLE */}
             <div className="overflow-x-auto">
               <table className="table-auto border-collapse w-full max-w-xs text-sm">
                 <tbody>
                   <tr>
-                    <td className="text-gray-400 font-medium pr-4">Brand</td>
-                    <td className="text-gray-200">{productData.brand?.trim() || "Unknown"}</td>
+                    <td className="text-gray-500 font-medium pr-4 py-1">Brand</td>
+                    <td className="text-gray-700">{productData.brand || "Unknown"}</td>
                   </tr>
                   <tr>
-                    <td className="text-gray-400 font-medium pr-4">Color</td>
-                    <td className="text-gray-200">Multi</td>
-                  </tr>
-                  <tr>
-                    <td className="text-gray-400 font-medium pr-4">Category</td>
-                    <td className="text-gray-200">{productData.category}</td>
+                    <td className="text-gray-500 font-medium pr-4 py-1">Category</td>
+                    <td className="text-gray-700">{productData.category}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            {/* Buttons */}
+            {/* BUTTONS */}
             <div className="flex flex-col sm:flex-row items-center mt-10 gap-4">
               <button
-                onClick={() => addToCart(productData._id)}
-                className="w-full py-3.5 bg-gray-600 text-white hover:bg-gray-700 transition"
+                onClick={handleAddToCart}
+                className="w-full py-3.5 font-medium text-white bg-gray-600 rounded hover:bg-gray-700 transition"
               >
                 Add to Cart
               </button>
+
               <button
-                onClick={() => {
-                  addToCart(productData._id);
-                  router.push(user ? '/cart' : '');
-                }}
-                className="w-full py-3.5 bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white font-medium hover:opacity-90 transition"
+                onClick={handleBuyNow}
+                className="
+                  w-full py-3.5 font-medium text-white
+                   bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600
+                  rounded hover:opacity-90 transition
+                "
               >
                 Buy now
               </button>
@@ -128,24 +171,37 @@ const Product = () => {
           </div>
         </div>
 
-        {/* Featured */}
+        {/* FEATURED PRODUCTS */}
         <div className="flex flex-col items-center">
           <div className="flex flex-col items-center mb-4 mt-16">
-            <p className="text-2xl md:text-3xl font-medium text-center">
-              Featured <span className="font-medium text-purple-500">Products</span>
+
+            <p className="text-2xl md:text-3xl font-semibold text-center">
+              Featured{" "}
+              <span
+                className="
+                  bg-gradient-to-r from-[#7B5CFF] via-[#B46CDB] to-[#FF7A45]
+                  text-transparent bg-clip-text
+                "
+              >
+                Products
+              </span>
             </p>
-            <div className="w-20 md:w-28 h-0.5 bg-purple-500 mt-2"></div>
           </div>
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mt-6 pb-14 w-full">
             {products.slice(0, 5).map((product, index) => (
               <ProductCard key={index} product={product} />
             ))}
           </div>
-          <button className="px-8 py-2 mb-16 border rounded text-white hover:bg-gray-700 transition">
+
+          <button 
+          onClick={() => router.push("/all-products")}
+          className="px-8 py-2 mb-16 border rounded text-black hover:bg-gray-100 transition">
             See more
           </button>
         </div>
       </div>
+
       <Footer />
     </>
   );

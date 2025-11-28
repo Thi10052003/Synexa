@@ -3,7 +3,7 @@ import "./globals.css";
 import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
-
+import SessionTracker from "./providers/SessionTracker";
 const outfit = Outfit({ subsets: ['latin'], weight: ["300", "400", "500"] })
 
 export const metadata = {
@@ -23,6 +23,7 @@ export default function RootLayout({ children }) {
           <AppContextProvider>
             {children}
           </AppContextProvider>
+          <SessionTracker />
         </body>
       </html>
       </ClerkProvider>

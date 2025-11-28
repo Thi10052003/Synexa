@@ -18,11 +18,9 @@ const HeaderSlider = () => {
         const json = await res.json();
         if (json.success && Array.isArray(json.products)) {
           setSliderData(json.products.slice(0, 5));
-        } else {
-          console.error('Invalid product list response:', json);
         }
       } catch (err) {
-        console.error('Error fetching product list:', err);
+        console.log(err);
       }
     };
     fetchData();
@@ -32,24 +30,17 @@ const HeaderSlider = () => {
     if (sliderData.length === 0) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % sliderData.length);
-    }, 3000);
+    }, 3500);
     return () => clearInterval(interval);
   }, [sliderData]);
 
-  const handleSlideChange = (index) => {
-    setCurrentSlide(index);
-  };
+  const handleSlideChange = (index) => setCurrentSlide(index);
 
-  // --- SWIPE HANDLERS ---
-  const handleTouchStart = (e) => {
+  const handleTouchStart = (e) =>
     setTouchStartX(e.touches[0].clientX);
-    setDragOffset(0);
-  };
 
-  const handleTouchMove = (e) => {
-    const moveX = e.touches[0].clientX;
-    setDragOffset(moveX - touchStartX);
-  };
+  const handleTouchMove = (e) =>
+    setDragOffset(e.touches[0].clientX - touchStartX);
 
   const handleTouchEnd = () => {
     const threshold = 50;
@@ -65,7 +56,7 @@ const HeaderSlider = () => {
 
   return (
     <div
-      className="overflow-hidden relative w-full"
+      className="overflow-hidden relative w-full pb-6 bg-white"   // 💡 nền trắng hoàn toàn
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -79,68 +70,104 @@ const HeaderSlider = () => {
         {sliderData.map((product) => (
           <div
             key={product._id}
-            className="flex flex-col-reverse md:flex-row items-center justify-between bg-black border border-white py-6 px-4 md:px-14 mt-4 rounded-xl min-w-full shadow-md"
+            className="min-w-full px-6 md:px-14 py-10 mt-6 flex justify-center"
           >
-            {/* Text Section */}
-            <div className="mt-6 md:mt-0 md:pl-8 text-center md:text-left">
-              <p className="text-sm md:text-base text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-500 font-medium pb-1">
-                Hot Deal!
-              </p>
-              <h1 className="text-xl sm:text-2xl md:text-[40px] md:leading-[48px] font-semibold text-white max-w-md">
-                {product.name}
-              </h1>
-              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 mt-4 md:mt-6">
-                {/* Buy Now */}
-                <button
-                  onClick={() => router.push(`/product/${product._id}`)}
-                  className="px-6 sm:px-8 py-2 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-full text-white text-sm sm:text-base font-medium hover:opacity-90 transition w-full sm:w-auto"
-                >
-                  Buy now
-                </button>
 
-                {/* Details */}
-                <button
-                  onClick={() => router.push(`/product/${product._id}`)}
-                  className="flex items-center justify-center gap-2 px-5 py-2 text-sm sm:text-base text-white font-medium border rounded-full border-[rgba(168,85,247,0.8)] hover:bg-gradient-to-r from-purple-500 to-fuchsia-500 transition w-full sm:w-auto"
+            {/* Neumorphic Card */}
+            <div
+              className="
+                w-full max-w-6xl rounded-3xl p-10
+                bg-white
+                shadow-[10px_10px_25px_#d5d5d5,-10px_-10px_25px_#ffffff]
+                flex flex-col-reverse md:flex-row items-center justify-between 
+                gap-10
+              "
+            >
+
+              {/* Text Section */}
+              <div className="text-center md:text-left max-w-md">
+
+                <p className="text-purple-600 font-semibold pb-1 text-sm md:text-base">
+                  Hot Deal!
+                </p>
+
+                <h1
+                  className="
+    text-3xl sm:text-4xl md:text-5xl font-extrabold leading-snug
+    bg-gradient-to-r from-[#6D4EFF] via-[#A051B2] to-[#F7763B]
+    text-transparent bg-clip-text drop-shadow-[1px_1px_2px_rgba(0,0,0,0.15)]
+  "
                 >
-                  <span>Details</span>
-                  <Image
-                    className="group-hover:translate-x-1 transition"
-                    src={assets.arrow_icon}
-                    alt="arrow_icon"
-                    loading="lazy"
-                  />
-                </button>
+                  {product.name}
+                </h1>
+
+                {/* Buttons */}
+                <div className="flex flex-col sm:flex-row items-center md:justify-start gap-4 mt-6">
+
+                  {/* Buy Now */}
+                  <button
+                    onClick={() => router.push(`/product/${product._id}`)}
+                    className="
+    px-8 py-3 rounded-full text-white font-medium
+    bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600
+    shadow-[5px_5px_12px_#d5d5d5,-5px_-5px_12px_#ffffff]
+    hover:opacity-90 transition
+    w-full sm:w-auto
+  "
+                  >
+                    Buy now
+                  </button>
+
+                  {/* Details */}
+                  <button
+                    onClick={() => router.push(`/product/${product._id}`)}
+                    className="
+                      flex items-center gap-2 px-6 py-3 rounded-full 
+                      text-gray-700 font-medium 
+                      bg-white
+                      border border-gray-300
+                      shadow-[5px_5px_12px_#d5d5d5,-5px_-5px_12px_#ffffff]
+                      hover:bg-gray-50
+                      transition 
+                      w-full sm:w-auto
+                    "
+                  >
+                    <span>Details</span>
+                    <Image src={assets.arrow_icon} alt="arrow" />
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Image Section */}
-            <div className="flex items-center flex-1 justify-center">
-              <Image
-                className="w-40 sm:w-52 md:w-72 object-contain"
-                src={product.image[0]}
-                alt={product.name}
-                width={300}
-                height={300}
-                loading="lazy" // ⬅️ Lazy load ảnh sản phẩm
-              />
+              {/* Image Section */}
+              <div className="flex items-center justify-center flex-1">
+                <Image
+                  className="w-44 sm:w-56 md:w-72 drop-shadow-xl"
+                  src={product.image[0]}
+                  alt={product.name}
+                  width={300}
+                  height={300}
+                />
+              </div>
+
             </div>
           </div>
         ))}
       </div>
 
-      {/* Dots */}
-      <div className="flex items-center justify-center gap-2 mt-4 md:mt-8">
+      {/* Slider Dots */}
+      <div className="flex items-center justify-center gap-2 mt-4">
         {sliderData.map((_, index) => (
           <div
             key={index}
             onClick={() => handleSlideChange(index)}
-            className={`h-2 w-2 rounded-full cursor-pointer ${
-              currentSlide === index ? 'bg-purple-500' : 'bg-white/20'
-            }`}
+            className={`
+              h-3 w-3 rounded-full cursor-pointer transition
+              ${currentSlide === index ? "bg-purple-600" : "bg-gray-300"}
+            `}
           />
         ))}
       </div>
+
     </div>
   );
 };

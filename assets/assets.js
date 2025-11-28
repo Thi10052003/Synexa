@@ -1,4 +1,4 @@
-import logo from "./synexa.png";
+import logo from "./logo.png";
 import box from "./parcel_icon.svg"
 import search_icon from "./search_icon.svg";
 import user_icon from "./user_icon.svg";

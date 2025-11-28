@@ -9,37 +9,17 @@
 @layer base {
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
+        -webkit-appearance: none;
+        margin: 0;
     }
 
     html, body {
-      background-color: #000000 !important;
-      color: #ffffff;
-    }
+  background-color: #ffffff !important;
+  color: #ffffff;
+}
+
 }
 
 ::-webkit-scrollbar {
-  display: none;
-}
-.robot-icon {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 50;
-  pointer-events: auto; /* chỉ icon có thể click */
-}
-
-/* Container của chatbot khi đóng */
-.chatbot-container {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  z-index: 50;
-  pointer-events: none; /* không chặn các click khác khi chưa mở */
-}
-
-/* Khi chatbot mở */
-.chatbot-container.open {
-  pointer-events: auto; /* cho phép click vào chatbot khi mở */
+    display: none;
 }

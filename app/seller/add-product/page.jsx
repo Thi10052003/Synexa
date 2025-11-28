@@ -62,7 +62,7 @@ const AddProduct = () => {
     <div className="flex-1 min-h-screen flex flex-col justify-between text-white">
       <form onSubmit={handleSubmit} className="md:p-10 p-4 space-y-5 max-w-lg">
         <div>
-          <p className="text-base font-medium">Product Image</p>
+          <p className="text-black font-medium">Product Image</p>
           <div className="flex flex-wrap items-center gap-3 mt-2">
             {[...Array(4)].map((_, index) => (
               <label key={index} htmlFor={`image${index}`}>
@@ -90,7 +90,7 @@ const AddProduct = () => {
         </div>
 
         <div className="flex flex-col gap-1 max-w-md">
-          <label className="text-base font-medium" htmlFor="product-name">Product Name</label>
+          <label className="text-black font-medium" htmlFor="product-name">Product Name</label>
           <input
             id="product-name"
             type="text"
@@ -102,7 +102,7 @@ const AddProduct = () => {
           />
         </div>
         <div className="flex flex-col gap-1 max-w-md">
-          <label className="text-base font-medium" htmlFor="product-brand">Brand</label>
+          <label className="text-black font-medium" htmlFor="product-brand">Brand</label>
           <input
             id="product-brand"
             type="text"
@@ -115,7 +115,7 @@ const AddProduct = () => {
         </div>
 
         <div className="flex flex-col gap-1 max-w-md">
-          <label className="text-base font-medium" htmlFor="product-description">Product Description</label>
+          <label className="text-black font-medium" htmlFor="product-description">Product Description</label>
           <textarea
             id="product-description"
             rows={4}
@@ -129,7 +129,7 @@ const AddProduct = () => {
 
         <div className="flex items-center gap-5 flex-wrap">
           <div className="flex flex-col gap-1 w-32">
-            <label className="text-base font-medium" htmlFor="category">Category</label>
+            <label className="text-black font-medium" htmlFor="category">Category</label>
             <select
               id="category"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40 bg-black text-white"
